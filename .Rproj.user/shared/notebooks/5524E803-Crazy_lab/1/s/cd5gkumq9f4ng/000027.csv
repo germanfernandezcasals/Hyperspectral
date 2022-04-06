@@ -1,0 +1,5 @@
+"0","plot((sipi[[1]] - sipi[[2]])/(sipi[[1]] + sipi[[3]]),
+     col = pal(50)); toc()
+"
+"1","1.72 sec elapsed
+"

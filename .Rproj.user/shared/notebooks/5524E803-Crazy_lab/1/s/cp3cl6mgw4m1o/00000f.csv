@@ -1,3 +1,41 @@
+"0","library(hyperSpec)
+"
+"2","Loading required package: lattice
+"
+"2","Loading required package: grid
+"
+"2","Loading required package: ggplot2
+"
+"2","Loading required package: xml2
+"
+"2","Package hyperSpec, version 0.100.0
+
+To get started, try
+   vignette (""hyperspec"")
+   package?hyperSpec 
+   vignette (package = ""hyperSpec"")
+
+If you use this package please cite it appropriately.
+   citation(""hyperSpec"")
+will give you the correct reference.
+
+The project homepage is http://hyperspec.r-forge.r-project.org
+
+
+"
+"0","library(hyperSpec)"
+"0","library(raster)"
+"2","Loading required package: sp
+"
+"2","
+Attaching package: ‘raster’
+
+"
+"2","The following object is masked from ‘package:hyperSpec’:
+
+    bind
+
+"
 "0","library(hyperSpec)"
 "0","library(raster)"
 "0","library(tictoc)"

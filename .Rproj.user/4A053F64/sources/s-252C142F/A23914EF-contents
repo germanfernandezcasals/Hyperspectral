@@ -1,0 +1,42 @@
+library(multcompView)
+library(reshape2)
+library(agricolae)
+a.lda <- read.table(header = TRUE, text = "  rowname ohne_Sampling mit_Downsampling mit_Upsampling Gewichtung
+                          1   Fold1     0.6732673        0.8390805      0.7192982  0.6732673
+                          2   Fold2     0.7227723        0.8181818      0.7105263  0.7227723
+                          3   Fold3     0.7100000        0.7586207      0.6842105  0.7100000
+                          4   Fold4     0.6633663        0.8295455      0.7105263  0.6633663
+                          5   Fold5     0.7128713        0.8750000      0.7017544  0.7128713")
+
+#Transformation of the dataframe to get a format ggplot2 is able to use    
+
+a.anova <- aov(data=a.lda, value ~ variable)
+
+
+a.lda <- melt(a.lda, id.vars="rowname")
+
+#data_summary Function
+data_summary <- function(data, varname, groupnames){
+  require(plyr)
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      sd = sd(x[[col]], na.rm=TRUE),
+      minimum = min(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  data_sum <- rename(data_sum, c("mean" = varname))
+  return(data_sum)
+}
+
+a.sd.lda <- data_summary(a.lda, varname = "value", groupnames = "variable")
+
+#ANOVA+Tuckey
+a.anova <- aov(data=a.lda, value ~ variable)
+tukey <- TukeyHSD(a.anova)
+cld <- as.data.frame.list((multcompLetters4(a.anova,tukey))$variable)
+#The wrong letters do already appear here
+a.sd.lda$cld <- cld$Letters
+
+Fh <- HSD.test(a.anova,"value", group=TRUE,console=TRUE)
+bar.group(Fh$groups, ylim=c(0,1),density=50, col=2,border="black")

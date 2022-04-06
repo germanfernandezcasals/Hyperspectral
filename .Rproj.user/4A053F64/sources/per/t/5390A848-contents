@@ -106,3 +106,17 @@ ggplot() +
        x = "", y = "") + 
   theme_minimal()
 ```
+
+
+```{r}
+tic()
+rgb <- brick(
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,32]))); toc()
+
+a <- rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114]))
+tic()
+plot(a); toc()
+rgb[,1]
+```
