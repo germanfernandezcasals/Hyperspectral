@@ -1,5 +1,0 @@
-test <- rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114]))
-
-(G1D1df$spc[,114])
-plot(test)
-str(rgb)

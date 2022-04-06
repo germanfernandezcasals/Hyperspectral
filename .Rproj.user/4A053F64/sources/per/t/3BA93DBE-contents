@@ -3,7 +3,7 @@
 ## Main:        Hyperspectral data analysis
 ## Version:     2.1
 ## Creation:    2022-II-25
-## Last edited: 2022-IV-05
+## Last edited: 2022-IV-06
 
 
 ## Index:                                       ####
@@ -17,15 +17,15 @@
 #       3.1 Raster visualization
 #       3.1.1 Single layer raster
 #       3.1.2 RGB raster
-
+#       3.1.3 SIPI (Structure Intensive Pigment Index)
+#       3.1.4 CARI (Chlorophyll Absorption in Reflectance Index)
+#       3.1.5 PSSRa-c (Pigment- Specific Simple Ratio)
 #       3.2 Wavelength plots
 #       3.2.1 Plots from the same data base
 #       3.2.2 Plots from different data bases (for comparative)
 #       3.1.3 Image
 #       3.2 Using S3 class data (data frame)
 #       3.2.1 Basic graph
-
-#       4) Analysis
 
 
 ## 1) Packages loading ####
