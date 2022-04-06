@@ -3,7 +3,7 @@
 ## Main:        Hyperspectral data analysis
 ## Version:     2.1
 ## Creation:    2022-II-25
-## Last edited: 2022-IV-01
+## Last edited: 2022-IV-05
 
 
 ## Index:                                       ####
@@ -15,9 +15,13 @@
 #       2.3 Data transformation
 
 #       3) Data visualization
-#       3.1 Using S4 class data (hyperspect)
-#       3.1.1 Wavelength plots
-#       3.1.2 Plots from different data
+#       3.1 Raster visualization
+#       3.1.1 Single layer raster
+#       3.1.2 RGB raster
+
+#       3.2 Wavelength plots
+#       3.2.1 Plots from the same data base
+#       3.2.2 Plots from different data bases (for comparative)
 #       3.1.3 Image
 #       3.2 Using S3 class data (data frame)
 #       3.2.1 Basic graph
@@ -35,8 +39,8 @@ if(!require("tictoc")) install.packages("tictoc")
 
 ## 2.1 Data loading
 G1D1 <- read.ENVI(
-  file = "Data/2022-01-18 CERC potatoes/20220118_135248_G1/20220118_135248_G1.dat",
-  headerfile = "Data/2022-01-18 CERC potatoes/20220118_135248_G1/20220118_135248_G1.hdr",
+  file = "../Data/2022-01-18 CERC potatoes/20220118_135248_G1/20220118_135248_G1.dat",
+  headerfile = "../Data/2022-01-18 CERC potatoes/20220118_135248_G1/20220118_135248_G1.hdr",
   header = list(),
   keys.hdr2data = FALSE,
   wavelength = NULL,
@@ -46,8 +50,8 @@ G1D1 <- read.ENVI(
   pull.header.lines = TRUE)
 
 G1D2 <- read.ENVI(
-  file = "Data/2022-01-27 CERC potatoes/20220127_114743_G1/20220127_114743_G1.dat",
-  headerfile = "Data/2022-01-27 CERC potatoes/20220127_114743_G1/20220127_114743_G1.hdr",
+  file = "../Data/2022-01-27 CERC potatoes/20220127_114743_G1/20220127_114743_G1.dat",
+  headerfile = "../Data/2022-01-27 CERC potatoes/20220127_114743_G1/20220127_114743_G1.hdr",
   header = list(),
   keys.hdr2data = FALSE,
   wavelength = NULL,
@@ -68,8 +72,8 @@ validObject(G1D2)
 str(G1D2)
 
 ## 2.3 Data transformation
-G1D1df <- as.data.frame(G1D1)
-G1D2df <- as.data.frame(G1D1)
+G1D1df <- as.data.frame(G1D1, xy = TRUE)
+G1D2df <- as.data.frame(G1D1, xy = TRUE)
 
 class(G1D1df)
 chk.hy(G1D1df)      
@@ -84,9 +88,29 @@ str(G1D2)
 
 ## 3) Data visualization ####
 
-## 3.1 Using S4 class data (hyperspect)
+## 3.1 Raster visualization
 
-## 3.1.1 Wavelength plots
+## 3.1.1 Single layer raster
+ggplot() +
+  geom_raster(data = G1D1df,
+              aes (x = x, y = y, fill = spc[,32]))
+
+## 3.1.2 RGB raster
+rgb <- brick(
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,32])))
+
+
+plotRGB(rgb,
+        r = 1,
+        g = 2,
+        b = 3,
+        stretch = "lin")
+
+## 3.2 Wavelength plots
+
+## 3.2.1 Plots from the same data base
 plot(G1D1, col = "red", y = "spcprctile") #Mean and quantile plot, I couldn't put title to the plot or axis 
 abline (v = c(402, 750), col = c("black", "darkgreen")) #Test: visible spectrum
 
@@ -107,7 +131,7 @@ qplotspc(G1D1)
 
 qplotspc(G1D1, c(550 ~ 750, min ~ 1200))
 
-## 3.1.2 Plots from different data
+## 3.2.2 Plots from different data bases (for comparation) 
 plot (G1D1[630], col = "black")
 plot (G1D2[630], col = "red", add = TRUE) 
 
@@ -116,16 +140,6 @@ plot(G1D2, col = "yellow", y = "spcprctile", add = TRUE)
 abline (v = c(402, 750), col = c("black", "darkgreen"))
 
 
-## 3.1.3 Image
-plotmap(G1D1[,,630])
-
-levelplot(spc ~ y * x | as.factor(.wavelength),   #RGB separate plot
-          G1D1[,,c(630, 532, 465)],
-          aspect = "iso",
-          col.regions = matlab.palette(20)) #Change palette
-
-
-## 3.2 Using S3 class data (data frame)
 
 ## 3.2.1 Basic graph
 ggplot(G1D1df, aes(x = spc[,"630"])) +

@@ -1,0 +1,108 @@
+---
+Creator:     German Agustin Fernandez Casals
+Main:        Carzy Lab for Hyperspectral data analysis
+Version:     1.0
+Creation:    2022/IV/02
+Last edited: 2022/IV/05
+output: html_notebook
+---
+ Summary:
+ This place is for test code that is not yet ready for the main script.
+
+Library loading:
+```{r}
+library(hyperSpec)
+library(raster)
+library(tictoc)
+```
+
+Sample data loading (work):
+```{r}
+tic()
+G1D1 <- read.ENVI(
+  file = "../Data/2022-01-18 CERC potatoes/20220118_135248_G1/20220118_135248_G1.dat",
+  headerfile = "../Data/2022-01-18 CERC potatoes/20220118_135248_G1/20220118_135248_G1.hdr",
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE); toc()
+
+G1D1df <- as.data.frame(G1D1, xy = TRUE)
+head(G1D1df)
+```
+
+Raster of one layer using ggplot2 (work):
+```{r}
+tic()
+ggplot() +
+  geom_raster(data = G1D1df,
+              aes (x = x, y = y, fill = spc[,32])); toc()
+```
+
+Plot RGB from ggplot (not working)
+```{r}
+library(terrainr)
+tic()
+ggplot() +
+  geom_spatial_rgb(data = G1D1df,
+              aes (x = x, y = y,
+                   r = spc[,114],
+                   g = spc[,65],
+                   b = spc[,32]),
+              stat = "spatialRGB"); toc()
+
+#There is a problem with the stretch of the wavelength, for that it looks darck, see more in: https://raw.githubusercontent.com/NEONScience/NEON-Data-Skills/dev-aten/graphics/raster-general/imageStretch_dark.jpg
+```
+
+Plotting RGB and others using raster package (work)
+```{r}
+
+rgb <- brick(
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,32])))
+
+
+plotRGB(rgb,
+        r = 1,
+        g = 2,
+        b = 3,
+        stretch = "lin")
+
+```
+
+
+```{r}
+
+rgb <- brick(
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,32])))
+
+
+plotRGB(rgb,
+        r = 1,
+        g = 2,
+        b = 3,
+        stretch = "lin")
+
+```
+
+
+3.1.x MCARI (Modified Chlorophyll Absorption Reflectance Index) Not working
+```{r}
+ggplot() +
+  geom_raster(data = G1D1df,
+              aes (x = x, y = y,
+                   fill = (((spc[,149] - spc[,134]) - 
+                             0.2*(spc[149] - spc[74]))*spc[,149])/spc[,134])) +
+  scale_fill_gradientn(colours=c("black","green")) +
+  labs(fill="MCARI Value",
+       title = "Modified Chlorophyll Absorption Reflectance Index",
+       subtitle = "Georgina plant 1, day 1",
+       x = "", y = "") + 
+  theme_minimal()
+```

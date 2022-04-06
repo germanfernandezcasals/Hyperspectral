@@ -1,0 +1,19 @@
+"0","plotRGB(rgb, r=1, g=2, b=3, 
+        stretch=NULL, 
+        ext=NULL, 
+        interpolate=FALSE, 
+        colNA='white', 
+        alpha, 
+        bgalpha, 
+        addfun=NULL, 
+        zlim=NULL, 
+        zlimcol=NULL, 
+        axes=FALSE, 
+        xlab='', ylab='', 
+        asp=NULL, 
+        add=FALSE,
+        margins=FALSE)
+"
+"2","Error in as.vector(x, mode) : 
+  cannot coerce type 'closure' to vector of type 'any'
+"
