@@ -1,0 +1,11 @@
+"0","ggplot() +
+  geom_spatial_rgb(data = G1D1df,
+              aes (x = x, y = y,
+                   r = spc[,114],
+                   g = spc[,65],
+                   b = spc[,32]),
+              stat = ""spatialRGB""); toc()
+"
+"2","Error in geom_spatial_rgb(data = G1D1df, aes(x = x, y = y, r = spc[, 114],  : 
+  could not find function ""geom_spatial_rgb""
+"

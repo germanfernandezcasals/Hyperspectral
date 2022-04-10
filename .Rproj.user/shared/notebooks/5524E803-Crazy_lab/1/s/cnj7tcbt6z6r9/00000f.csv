@@ -8,8 +8,10 @@
 "0","  label = list(),"
 "0","  block.lines.skip = 0,"
 "0","  block.lines.size = NULL,"
-"0","  pull.header.lines = TRUE); toc()"
-"1","35.26 sec elapsed
-"
+"0","  pull.header.lines = TRUE)"
+"0",""
 "0","G1D1df <- as.data.frame(G1D1, xy = TRUE)"
-"0","head(G1D1df)"
+"0",""
+"0","rm(G1D1); toc()"
+"1","76.66 sec elapsed
+"

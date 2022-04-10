@@ -3,7 +3,7 @@ Creator:     German Agustin Fernandez Casals
 Main:        Carzy Lab for Hyperspectral data analysis
 Version:     1.0
 Creation:    2022/IV/02
-Last edited: 2022/IV/06
+Last edited: 2022/IV/10
 output: html_notebook
 ---
  Summary:
@@ -28,10 +28,11 @@ G1D1 <- read.ENVI(
   label = list(),
   block.lines.skip = 0,
   block.lines.size = NULL,
-  pull.header.lines = TRUE); toc()
+  pull.header.lines = TRUE)
 
 G1D1df <- as.data.frame(G1D1, xy = TRUE)
-head(G1D1df)
+
+rm(G1D1); toc()
 ```
 
 Raster of one layer using ggplot2 (work):
@@ -59,7 +60,7 @@ ggplot() +
 
 Plotting RGB and others using raster package (work)
 ```{r}
-
+tic()
 rgb <- brick(
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),
@@ -70,29 +71,12 @@ plotRGB(rgb,
         r = 1,
         g = 2,
         b = 3,
-        stretch = "lin")
+        stretch = "lin"); toc()
 
 ```
 
 
-```{r}
-
-rgb <- brick(
-  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),
-  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),
-  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,32])))
-
-
-plotRGB(rgb,
-        r = 1,
-        g = 2,
-        b = 3,
-        stretch = "lin")
-
-```
-
-
-3.1.x MCARI (Modified Chlorophyll Absorption Reflectance Index) Not working
+MCARI (Modified Chlorophyll Absorption Reflectance Index) Not working
 ```{r}
 ggplot() +
   geom_raster(data = G1D1df,
@@ -107,17 +91,68 @@ ggplot() +
   theme_minimal()
 ```
 
-
+SIPI (Structure Intensive Pigment Index) Work
 ```{r}
 tic()
 sipi <- brick(
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,199])),
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,22])),
-  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,139]))); toc()
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,139])))
 
 pal <- colorRampPalette(c("black","green"))
 
-tic()
 plot((sipi[[1]] - sipi[[2]])/(sipi[[1]] + sipi[[3]]),
      col = pal(50)); toc()
 ```
+
+
+Manual bounding boxes on steam (work)
+```{r}
+tic()
+rgb <- brick(
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,32])))
+
+bbox1 <- spPolygons(rbind(c(400,200), c(400,300), c(500, 300), c(500,200)))
+
+plotRGB(rgb,
+        r = 1,
+        g = 2,
+        b = 3,
+        stretch = "lin", 
+        addfun = lines(bbox1)); toc()
+
+```
+
+
+Auto-detecting stem with an un-regular bounding boxes (work)
+```{r}
+tic()
+cari <- brick(
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,149])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,134])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,74])))
+
+bb1 <- ((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]) >= 3.5)
+plot(bb1)
+bb2 <- as.data.frame(bb1, xy = T)
+bb3 <- subset(bb2, bb2$layer == "TRUE")
+
+bbox1 <- spPolygons(extent(bb3), crs = crs(bb1))
+bbox(bbox1)
+
+pal <- colorRampPalette(c("black","green"))
+
+plot((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]),
+     col = pal(50)) + 
+lines(bbox1)
+
+r1 <- crop(cari, bbox1) #Works
+plot(r1); toc()
+```
+
+
+Notes: 
+- r1 <- crop(rgb, e) #Some times works
+

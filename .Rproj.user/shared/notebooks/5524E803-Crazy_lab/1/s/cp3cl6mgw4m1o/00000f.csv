@@ -1,5 +1,4 @@
-"0","library(hyperSpec)
-"
+"0","library(hyperSpec)"
 "2","Loading required package: lattice
 "
 "2","Loading required package: grid
@@ -23,7 +22,6 @@ The project homepage is http://hyperspec.r-forge.r-project.org
 
 
 "
-"0","library(hyperSpec)"
 "0","library(raster)"
 "2","Loading required package: sp
 "
@@ -36,6 +34,4 @@ Attaching package: ‘raster’
     bind
 
 "
-"0","library(hyperSpec)"
-"0","library(raster)"
 "0","library(tictoc)"
