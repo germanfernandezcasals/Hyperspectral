@@ -3,7 +3,7 @@ Creator:     German Agustin Fernandez Casals
 Main:        Carzy Lab for Hyperspectral data analysis
 Version:     1.0
 Creation:    2022/IV/02
-Last edited: 2022/IV/10
+Last edited: 2022/IV/12
 output: html_notebook
 ---
  Summary:
@@ -151,8 +151,66 @@ lines(bbox1)
 r1 <- crop(cari, bbox1) #Works
 plot(r1); toc()
 ```
+loop to import data (DO NOT RUN)
+```{r}
+.FolderD1 <- list.dirs('../Data/2022-01-18 CERC potatoes')
+FolderD1 <- .FolderD1[str_detect(.FolderD1, '_ref')]
+
+D1.dat <- vector('character')
+for(i in 1:length(FolderD1)){
+  D1.dat[i] <- paste(FolderD1[i], '/',
+                     list.files(FolderD1[i])[str_detect(list.files(FolderD1[i]), '.dat')],
+                     sep = '')
+}
+
+D1.hdr <- vector('character')
+for(i in 1:length(FolderD1)){
+  D1.hdr[i] <- paste(FolderD1[i], '/',
+                     list.files(FolderD1[i])[str_detect(list.files(FolderD1[i]), '.hdr')],
+                     sep = '')}
 
 
+for(i in 1:length(FolderD1)){
+  dfName <- G[i]D1
+  }
+
+
+# DO NOT RUN
+tic()
+for(i in 1:length(FolderD1)){
+  G[i]D1 <- read.ENVI(
+    file = D1.dat[i],
+    headerfile = D1.hdr[i],
+    header = list(),
+    keys.hdr2data = FALSE,
+    wavelength = NULL,
+    label = list(),
+    block.lines.skip = 0,
+    block.lines.size = NULL,
+    pull.header.lines = TRUE)
+  
+  G[i]D1df <- as.data.frame(G[i]D1, xy = TRUE)
+  
+  rm(G[i]D1)
+  
+  G1D1b <- brick(
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,32])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,199])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,22])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,139])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,149])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,134])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,74])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,232])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,131])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,191])),
+    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,79])))
+  
+  rm(G[i]D1)
+  } ;toc()
+```
 Notes: 
 - r1 <- crop(rgb, e) #Some times works
 

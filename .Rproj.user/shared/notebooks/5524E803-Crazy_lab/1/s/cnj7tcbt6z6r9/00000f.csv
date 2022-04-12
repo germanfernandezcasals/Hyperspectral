@@ -13,5 +13,5 @@
 "0","G1D1df <- as.data.frame(G1D1, xy = TRUE)"
 "0",""
 "0","rm(G1D1); toc()"
-"1","76.66 sec elapsed
+"1","57.5 sec elapsed
 "

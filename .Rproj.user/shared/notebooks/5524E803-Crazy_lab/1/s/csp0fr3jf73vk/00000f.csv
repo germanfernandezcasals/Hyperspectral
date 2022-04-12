@@ -1,0 +1,64 @@
+"0","spPolygons
+"
+"1","function (x, ..., attr = NULL, crs = """") 
+"
+"1","{
+"
+"1","    x <- c(list(x), list(...))
+"
+"1","    x <- rapply(x, sp::Polygon, how = ""replace"")
+"
+"1","    x <- lapply(1:length(x), function(i) {
+"
+"1","        if (length(x[[i]]) == 1) {
+"
+"1","            sp::Polygons(x[i], as.character(i))
+"
+"1","        }
+"
+"1","        else {
+"
+"1","            sp::Polygons(x[[i]], as.character(i))
+"
+"1","        }
+"
+"1","    })
+"
+"1","    x <- sp::SpatialPolygons(x)
+"
+"1","    if (!is.null(attr)) {
+"
+"1","        if (nrow(attr) == length(x)) {
+"
+"1","            x <- sp::SpatialPolygonsDataFrame(x, attr)
+"
+"1","        }
+"
+"1","        else {
+"
+"1","            msg <- paste(""number of rows in attr ("", nrow(attr), 
+"
+"1","                "") does not match the number of polygons ("", 
+"
+"1","                length(x), "")"", sep = """")
+"
+"1","            stop(msg)
+"
+"1","        }
+"
+"1","    }
+"
+"1","    if (!is.na(crs)) {
+"
+"1","        crs(x) <- crs
+"
+"1","    }
+"
+"1","    x
+"
+"1","}
+"
+"1","<bytecode: 0x000002197ff79cf0>
+"
+"1","<environment: namespace:raster>
+"

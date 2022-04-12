@@ -3,13 +3,15 @@
 ## Main:        Hyperspectral data analysis
 ## Version:     2.1
 ## Creation:    2022-II-25
-## Last edited: 2022-IV-06
+## Last edited: 2022-IV-12
 
 
 ## Index:                                       ####
 #       1) Packages loading
 
 #       2) Data import and transformation
+#       2.1 Day 1 (D1)
+#       2.2 Day 2 (D2)
 
 #       3) Data visualization
 #       3.1 Raster visualization
@@ -18,6 +20,8 @@
 #       3.1.3 SIPI (Structure Intensive Pigment Index)
 #       3.1.4 CARI (Chlorophyll Absorption in Reflectance Index)
 #       3.1.5 PSSRa-c (Pigment- Specific Simple Ratio)
+#       3.1.6 NDVI (Normalized Difference Vegetation Index)
+#       3.1.7 CIG (Chlorophyll Index Green)
 #       3.2 Wavelength plots
 #       3.2.1 Plots from the same data base
 #       3.2.2 Plots from different data bases (for comparative)
@@ -29,13 +33,14 @@
 #       4.1 Manual boundary box on the stem
 #       4.2 Using CARI
 #       4.2.1 Auto-detecting stem with an un-regular bounding boxes
+#       4.2.2 Auto-detecting stem with a regular bounding boxes
 
 
 ## 1) Packages loading ####
 if(!require("hyperSpec")) install.packages("hyperSpec")
 if(!require("raster")) install.packages("raster")
 if(!require("tictoc")) install.packages("tictoc")
-
+if(!require("stringr")) install.packages("stringr")
 
 ## 2) Data import and transformation ####
 
@@ -48,11 +53,31 @@ if(!require("tictoc")) install.packages("tictoc")
 # data frame to work with, adding a "df" at the end of the name (ex. G1D1df).
 # Once that transformation is done the original hyperSpec data is deleted from
 # the R environment to salve RAM.
+# In order to import the data more easily, the route of the files was calculate
+# on the code and salve as a vector, but for the prepuce of this script it only
+# going to be used the first Georgina plant on the day 1 and 2.
 
+## 2.1 Day 1 (D1)
+
+.FolderD1 <- list.dirs('../Data/2022-01-18 CERC potatoes')
+FolderD1 <- .FolderD1[str_detect(.FolderD1, '_ref')]
+
+D1.dat <- vector('character')
+for(i in 1:length(FolderD1)){
+  D1.dat[i] <- paste(FolderD1[i], '/',
+                      list.files(FolderD1[i])[str_detect(list.files(FolderD1[i]), '.dat')],
+                      sep = '')
+}
+
+D1.hdr <- vector('character')
+for(i in 1:length(FolderD1)){
+  D1.hdr[i] <- paste(FolderD1[i], '/',
+                     list.files(FolderD1[i])[str_detect(list.files(FolderD1[i]), '.hdr')],
+                     sep = '')}
 
 G1D1 <- read.ENVI(
-  file = "../Data/2022-01-18 CERC potatoes/20220118_135248_G1/20220118_135248_G1.dat",
-  headerfile = "../Data/2022-01-18 CERC potatoes/20220118_135248_G1/20220118_135248_G1.hdr",
+  file = D1.dat[1],
+  headerfile = D1.hdr[1],
   header = list(),
   keys.hdr2data = FALSE,
   wavelength = NULL,
@@ -63,11 +88,29 @@ G1D1 <- read.ENVI(
 
 G1D1df <- as.data.frame(G1D1, xy = TRUE)
 
-rm(G1D1)
+rm(G1D1, D1.dat, D1.hdr, FolderD1, i)
+
+## 2.2 Day 2 (D2)
+
+.FolderD2 <- list.dirs('../Data/2022-01-27 CERC potatoes')
+FolderD2 <- .FolderD2[str_detect(.FolderD2, '_ref')]
+
+D2.dat <- vector('character')
+for(i in 1:length(FolderD2)){
+  D2.dat[i] <- paste(FolderD2[i], '/',
+                     list.files(FolderD2[i])[str_detect(list.files(FolderD2[i]), '.dat')],
+                     sep = '')
+}
+
+D2.hdr <- vector('character')
+for(i in 1:length(FolderD2)){
+  D2.hdr[i] <- paste(FolderD2[i], '/',
+                     list.files(FolderD2[i])[str_detect(list.files(FolderD2[i]), '.hdr')],
+                     sep = '')}
 
 G1D2 <- read.ENVI(
-  file = "../Data/2022-01-27 CERC potatoes/20220127_114743_G1/20220127_114743_G1.dat",
-  headerfile = "../Data/2022-01-27 CERC potatoes/20220127_114743_G1/20220127_114743_G1.hdr",
+  file = D2.dat[1],
+  headerfile = D2.hdr[1],
   header = list(),
   keys.hdr2data = FALSE,
   wavelength = NULL,
@@ -78,7 +121,8 @@ G1D2 <- read.ENVI(
 
 G1D2df <- as.data.frame(G1D2, xy = TRUE)
 
-rm (G1D2)
+rm(G1D2, D2.dat, D2.hdr, FolderD2, i)
+
 
 ## 3) Data visualization ####
 
@@ -86,7 +130,7 @@ rm (G1D2)
 
 # Notes:
 # Different types of data visualization, not everyone will serve but it's nice to try
-
+# AS THERE IS USED THE "_ref" FILES, THE VALUES ARE PROPORTIONS.
 
 ## 3.1.1 Single layer raster
 ggplot() +
@@ -108,6 +152,7 @@ plotRGB(rgb,
 
 
 ## 3.1.3 SIPI (Structure Intensive Pigment Index)
+#               Penuelas, 1995 cited by Liu et. al. 2021 p. 6
 sipi <- brick(
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,199])),
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,22])),
@@ -136,6 +181,7 @@ ggplot() +
 
 
 ## 3.1.4 CARI (Chlorophyll Absorption in Reflectance Index)
+#               Daughtry, 2000 cited by Liu et. al. 2021 p. 6
 cari <- brick(
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,149])),
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,134])),
@@ -162,6 +208,7 @@ ggplot() +
 
 
 ## 3.1.5 PSSRa-c (Pigment- Specific Simple Ratio)
+#               Blackburn, 1998 cited by Liu et. al. 2021 p. 6
 PSSRac <- brick(
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,199]/G1D1df$spc[,139])),
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,199]/G1D1df$spc[,117])),
@@ -172,6 +219,57 @@ plotRGB(PSSRac,
         g = 2,
         b = 3,
         stretch = "lin")
+
+
+## 3.1.6 NDVI (Normalized Difference Vegetation Index)
+#             Rouse et. al. 1974 cited by Mhango et. al. 2021 p. 8
+ndvi <- brick(
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,232])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,131])))
+
+pal <- colorRampPalette(c("black","green"))
+
+plot((ndvi[[1]] - ndvi[[2]]) / (ndvi[[1]] + ndvi[[2]]),
+     col = pal(50))
+
+#or
+
+ggplot() +
+  geom_raster(data = G1D1df,
+              aes (x = x, y = y,
+                   fill = ((spc[,232] - spc[,131]) / 
+                             (spc[,232] + spc[,131])))) +
+  scale_fill_gradientn(colours=c("black","green")) +
+  labs(fill="NVDI Value",
+       title = "Normalized Difference Vegetation Index",
+       subtitle = "Georgina plant 1, day 1",
+       x = "", y = "") + 
+  theme_minimal()
+
+
+## 3.1.7 CIG (Chlorophyll Index Green)
+#             Gitelson et. al. 2003 cited by Mhango et. al. 2021 p. 8
+cig <- brick(
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,191])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,79])))
+
+pal <- colorRampPalette(c("black","green"))
+
+plot((cig[[1]] / cig[[2]]) - 1,
+     col = pal(50))
+
+#or
+
+ggplot() +
+  geom_raster(data = G1D1df,
+              aes (x = x, y = y,
+                   fill = ((spc[,191] / spc[,79]) - 1))) +
+  scale_fill_gradientn(colours=c("black","green")) +
+  labs(fill="CIG Value",
+       title = "Chlorophyll Index Green",
+       subtitle = "Georgina plant 1, day 1",
+       x = "", y = "") + 
+  theme_minimal()
 
 
 ## 3.2 Wavelength plots
@@ -276,8 +374,8 @@ plotRGB(rgb,
 ## 4.2.1 Auto-detecting stem with an un-regular bounding boxes
 
 # Notes:
-# This system have the flow that is not very precise, mainly on the G1D2,
-# also only work with plants that have only one stem.
+# This system grab the 10% higher values of the CARI index and locks them
+# up on different design of bounding boxes.
 # Be careful with the RAM if you want to plot the two rasters at the same time
 
 
@@ -287,7 +385,8 @@ cari <- brick(
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,134])),
   rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,74])))
 
-.bb1 <- ((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]) >= 3.5)
+.bbcari <- ((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]))
+.bb1 <- (.bbcari >= max(.bbcari[])*0.9)
 .bb2 <- as.data.frame(.bb1, xy = T)
 .bb3 <- subset(.bb2, .bb2$layer == "TRUE")
 
@@ -298,7 +397,7 @@ pal <- colorRampPalette(c("black","green"))
 
 plot((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]),
      col = pal(50)) + 
-  lines(bbox1)
+  lines(bbox1, col = "red", lwd = 3)
 
 
 ##G1D2
@@ -307,10 +406,11 @@ cari <- brick(
   rasterFromXYZ(data.frame(G1D2df$x, G1D2df$y, G1D2df$spc[,134])),
   rasterFromXYZ(data.frame(G1D2df$x, G1D2df$y, G1D2df$spc[,74])))
 
-.bb1 <- ((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]) >= 3.75)
+.bbcari <- ((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]))
+.bb1 <- (.bbcari >= max(.bbcari[])*0.9)
 .bb2 <- as.data.frame(.bb1, xy = T)
 .bb3 <- subset(.bb2, .bb2$layer == "TRUE")
-plot(.bb1)
+
 bbox1 <- spPolygons(extent(.bb3), crs = crs(.bb1))
 bbox(bbox1)
 
@@ -318,4 +418,73 @@ pal <- colorRampPalette(c("black","green"))
 
 plot((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]),
      col = pal(50)) + 
-  lines(bbox1)
+  lines(bbox1, col = "red", lwd = 3)
+
+
+## 4.2.2 Auto-detecting stem with a regular bounding boxes
+
+##G1D1
+cari <- brick(
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,149])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,134])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,74])))
+
+.bbcari <- ((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]))
+.bb1 <- (.bbcari >= max(.bbcari[])*0.9)
+.bb2 <- as.data.frame(.bb1, xy = T)
+.bb3 <- subset(.bb2, .bb2$layer == "TRUE")
+
+bbox.side = 100
+
+.bbox.coord <- rbind(c(mean(as.vector(extent(.bb3))[c(1,2)]) - (bbox.side/2),
+                      mean(as.vector(extent(.bb3))[c(3,4)]) - (bbox.side/2)),
+                     c(mean(as.vector(extent(.bb3))[c(1,2)]) - (bbox.side/2),
+                       mean(as.vector(extent(.bb3))[c(3,4)]) + (bbox.side/2)),
+                     c(mean(as.vector(extent(.bb3))[c(1,2)]) + (bbox.side/2),
+                       mean(as.vector(extent(.bb3))[c(3,4)]) + (bbox.side/2)),
+                     c(mean(as.vector(extent(.bb3))[c(1,2)]) + (bbox.side/2),
+                       mean(as.vector(extent(.bb3))[c(3,4)]) - (bbox.side/2)))
+
+bbox1 <- spPolygons(.bbox.coord, crs = crs(.bb1))
+
+bbox(bbox1, col = "red", lwd = 3)
+
+pal <- colorRampPalette(c("black","green"))
+
+plot((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]),
+     col = pal(50)) + 
+  lines(bbox1, col = "red", lwd = 3)
+
+
+##G1D2
+cari <- brick(
+  rasterFromXYZ(data.frame(G1D2df$x, G1D2df$y, G1D2df$spc[,149])),
+  rasterFromXYZ(data.frame(G1D2df$x, G1D2df$y, G1D2df$spc[,134])),
+  rasterFromXYZ(data.frame(G1D2df$x, G1D2df$y, G1D2df$spc[,74])))
+
+.bbcari <- ((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]))
+.bb1 <- (bbcari >= max(.bbcari[])*0.9)
+.bb2 <- as.data.frame(.bb1, xy = T)
+.bb3 <- subset(.bb2, .bb2$layer == "TRUE")
+
+bbox.side = 100
+
+.bbox.coord <- rbind(c(mean(as.vector(extent(.bb3))[c(1,2)]) - (bbox.side/2),
+                       mean(as.vector(extent(.bb3))[c(3,4)]) - (bbox.side/2)),
+                     c(mean(as.vector(extent(.bb3))[c(1,2)]) - (bbox.side/2),
+                       mean(as.vector(extent(.bb3))[c(3,4)]) + (bbox.side/2)),
+                     c(mean(as.vector(extent(.bb3))[c(1,2)]) + (bbox.side/2),
+                       mean(as.vector(extent(.bb3))[c(3,4)]) + (bbox.side/2)),
+                     c(mean(as.vector(extent(.bb3))[c(1,2)]) + (bbox.side/2),
+                       mean(as.vector(extent(.bb3))[c(3,4)]) - (bbox.side/2)))
+
+bbox1 <- spPolygons(.bbox.coord, crs = crs(.bb1))
+
+bbox(bbox1)
+
+pal <- colorRampPalette(c("black","green"))
+
+plot((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]),
+     col = pal(50)) + 
+  lines(bbox1, col = "red", lwd = 3)
+
