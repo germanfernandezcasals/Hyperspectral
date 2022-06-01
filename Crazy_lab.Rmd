@@ -14,6 +14,7 @@ Library loading:
 library(hyperSpec)
 library(raster)
 library(tictoc)
+library(stringr)
 ```
 
 Sample data loading (work):
@@ -153,6 +154,14 @@ plot(r1); toc()
 ```
 loop to import data (DO NOT RUN)
 ```{r}
+
+if(!require("hyperSpec")) install.packages("hyperSpec")
+if(!require("raster")) install.packages("raster")
+if(!require("tictoc")) install.packages("tictoc")
+if(!require("stringr")) install.packages("stringr")
+library(tidyr)
+library(tidyverse)
+
 .FolderD1 <- list.dirs('../Data/2022-01-18 CERC potatoes')
 FolderD1 <- .FolderD1[str_detect(.FolderD1, '_ref')]
 
@@ -169,16 +178,16 @@ for(i in 1:length(FolderD1)){
                      list.files(FolderD1[i])[str_detect(list.files(FolderD1[i]), '.hdr')],
                      sep = '')}
 
+dfNames <- vector('character')
+#for(i in 1:9){
+#  dfNames[i] <- paste("G",as.character(i),"D1df", sep = "")
+#}
+dfNames <- c("G1D1", "G1D2")
+V <- c()
 
-for(i in 1:length(FolderD1)){
-  dfName <- G[i]D1
-  }
-
-
-# DO NOT RUN
 tic()
-for(i in 1:length(FolderD1)){
-  G[i]D1 <- read.ENVI(
+for(i in 1:2){
+  a<- read.ENVI(
     file = D1.dat[i],
     headerfile = D1.hdr[i],
     header = list(),
@@ -188,29 +197,32 @@ for(i in 1:length(FolderD1)){
     block.lines.skip = 0,
     block.lines.size = NULL,
     pull.header.lines = TRUE)
+
+b <- as.data.frame(a, xy = TRUE)
+
+rm(a)
+
+dfNames[i] <- brick(
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,114])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,65])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,32])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,199])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,22])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,139])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,149])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,134])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,74])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,232])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,131])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,191])),
+  rasterFromXYZ(data.frame(b$x, b$y, b$spc[,79])))
+
+V <- append(V, paste(dfNames[i]))
+
+rm (b, dfNames)
+} ;toc()
+
   
-  G[i]D1df <- as.data.frame(G[i]D1, xy = TRUE)
   
-  rm(G[i]D1)
-  
-  G1D1b <- brick(
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,32])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,199])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,22])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,139])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,149])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,134])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,74])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,232])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,131])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,191])),
-    rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,79])))
-  
-  rm(G[i]D1)
-  } ;toc()
 ```
-Notes: 
-- r1 <- crop(rgb, e) #Some times works
 

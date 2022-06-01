@@ -34,6 +34,8 @@
 #       4.2 Using CARI
 #       4.2.1 Auto-detecting stem with an un-regular bounding boxes
 #       4.2.2 Auto-detecting stem with a regular bounding boxes
+#       4.2.2.1 External irregular boundary box
+#       4.2.2.2 Clipping the data of the boundary boxes
 
 
 ## 1) Packages loading ####
@@ -434,7 +436,7 @@ cari <- brick(
 .bb2 <- as.data.frame(.bb1, xy = T)
 .bb3 <- subset(.bb2, .bb2$layer == "TRUE")
 
-bbox.side = 100
+bbox.side = 100 #Size of one of the sides of the squares on pixels
 
 .bbox.coord <- rbind(c(mean(as.vector(extent(.bb3))[c(1,2)]) - (bbox.side/2),
                       mean(as.vector(extent(.bb3))[c(3,4)]) - (bbox.side/2)),
@@ -456,35 +458,46 @@ plot((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]),
   lines(bbox1, col = "red", lwd = 3)
 
 
-##G1D2
+## 4.2.2.1 External irregular boundary box
+# Notes:
+# This system grab the 50% higher values of the CARI index and locks them
+# up on an not determinate size bounding boxes.
+# Be careful with the RAM if you want to plot the two rasters at the same time
+
+
+##G1D1
 cari <- brick(
-  rasterFromXYZ(data.frame(G1D2df$x, G1D2df$y, G1D2df$spc[,149])),
-  rasterFromXYZ(data.frame(G1D2df$x, G1D2df$y, G1D2df$spc[,134])),
-  rasterFromXYZ(data.frame(G1D2df$x, G1D2df$y, G1D2df$spc[,74])))
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,149])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,134])),
+  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,74])))
 
 .bbcari <- ((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]))
-.bb1 <- (bbcari >= max(.bbcari[])*0.9)
+.bb1 <- (.bbcari >= max(.bbcari[])*0.50)
 .bb2 <- as.data.frame(.bb1, xy = T)
 .bb3 <- subset(.bb2, .bb2$layer == "TRUE")
 
-bbox.side = 100
-
-.bbox.coord <- rbind(c(mean(as.vector(extent(.bb3))[c(1,2)]) - (bbox.side/2),
-                       mean(as.vector(extent(.bb3))[c(3,4)]) - (bbox.side/2)),
-                     c(mean(as.vector(extent(.bb3))[c(1,2)]) - (bbox.side/2),
-                       mean(as.vector(extent(.bb3))[c(3,4)]) + (bbox.side/2)),
-                     c(mean(as.vector(extent(.bb3))[c(1,2)]) + (bbox.side/2),
-                       mean(as.vector(extent(.bb3))[c(3,4)]) + (bbox.side/2)),
-                     c(mean(as.vector(extent(.bb3))[c(1,2)]) + (bbox.side/2),
-                       mean(as.vector(extent(.bb3))[c(3,4)]) - (bbox.side/2)))
-
-bbox1 <- spPolygons(.bbox.coord, crs = crs(.bb1))
-
-bbox(bbox1)
+bbox2 <- spPolygons(extent(.bb3), crs = crs(.bb1))
+bbox(bbox2)
 
 pal <- colorRampPalette(c("black","green"))
 
 plot((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]),
      col = pal(50)) + 
-  lines(bbox1, col = "red", lwd = 3)
+  lines(bbox2, col = "red", lwd = 3)
+
+
+## 4.2.2.2 Clipping the data of the boundary boxes
+
+SG1D1 <- crop(cari, bbox1)
+plot(SG1D1)
+
+SG1D1df <- as.data.frame(SG1D1, xy = T)
+summary(SG1D1df)
+
+.EG1D1 <- crop(cari, bbox2)
+Test <- sampleRandom(.EG1D1, size = 1, xy = T, na.rm = T, ext = bbox2, cell = F)
+
+plot((cari[[1]] - cari[[2]]) - 0.2*(cari[[1]] - cari[[3]]),
+     col = pal(50)) + 
+  lines(Test, col = "red", lwd = 3)
 
