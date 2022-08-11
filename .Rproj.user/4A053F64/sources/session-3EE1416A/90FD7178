@@ -1,0 +1,27 @@
+{
+    "id": "90FD7178",
+    "path": "~/Harper Adams Uni/Dissertation/RStat_Dissertation/Hyperspectral/Data_Import.R",
+    "project_path": "Data_Import.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1660126424909.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "3226,61",
+        "scrollLine": "3212"
+    },
+    "folds": "31|15|49|0|\n52|33|147|0|\n244|33|339|0|\n340|33|435|0|\n436|33|531|0|\n532|33|628|0|\n629|33|724|0|\n725|33|820|0|\n821|35|825|0|\n829|31|924|0|\n925|31|1020|0|\n1021|31|1116|0|\n1117|31|1212|0|\n1213|31|1308|0|\n1309|31|1405|0|\n1406|31|1501|0|\n1502|31|1597|0|\n1598|33|1602|0|\n1630|33|1725|0|\n1726|33|1821|0|\n1822|33|1917|0|\n1918|33|2013|0|\n2014|33|2109|0|\n2110|33|2206|0|\n2207|33|2302|0|\n2303|33|2398|0|\n2407|31|2502|0|\n2503|31|2598|0|\n2599|31|2694|0|\n2695|31|2791|0|\n2792|31|2888|0|\n2889|36|2985|0|\n2986|36|3081|0|\n3082|36|3177|0|\n3178|33|3182|0|\n3183|25|3188|0|\n",
+    "lastKnownWriteTime": 1660185048,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1660215717039,
+    "read_only": false,
+    "read_only_alternatives": []
+}

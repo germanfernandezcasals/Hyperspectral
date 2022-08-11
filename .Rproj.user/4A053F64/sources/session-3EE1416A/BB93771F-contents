@@ -1,0 +1,16 @@
+library(lme4)
+
+Days <- sleepstudy$Days
+data2 <- data.frame(X = Days, Y = Days, Z = Days)
+
+nc <- ncol(data2)
+
+lmer_list <- vector("list", length = nc)
+
+for(i in seq.int(nc)){
+  #fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+  fm1 <- lmer(sleepstudy[, 1] ~ data2[, i] + (data2[, i] | sleepstudy[, 3]))
+  lmer_list[[i]] <- fm1
+}
+
+lmer_list[1]

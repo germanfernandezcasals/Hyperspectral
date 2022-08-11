@@ -1,0 +1,5 @@
+"0","salveRDS(data.ag,""../Data/Excel\\Data with mean and sd.rds"")
+"
+"2","Error in salveRDS(data.ag, ""../Data/Excel\\Data with mean and sd.rds"") : 
+  could not find function ""salveRDS""
+"

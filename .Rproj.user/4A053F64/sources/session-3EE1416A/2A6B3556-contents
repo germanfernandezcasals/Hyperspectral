@@ -1,0 +1,1468 @@
+---
+
+output: html_document
+---
+
+```{r setup, include=FALSE}
+## 1) Packages loading ####
+if(!require("hyperSpec")) install.packages("hyperSpec")
+if(!require("raster")) install.packages("raster")
+if(!require("tictoc")) install.packages("tictoc")
+if(!require("stringr")) install.packages("stringr")
+if(!require("writexl")) install.packages("writexl")
+
+## 2) Day 1 ####
+## 2.1 Folders ####
+
+.FolderD1 <- list.dirs('../Data/2022-01-18 CERC potatoes')
+FolderD1 <- .FolderD1[str_detect(.FolderD1, '_ref')]
+
+D1.dat <- vector('character')
+for(i in 1:length(FolderD1)){
+  D1.dat[i] <- paste(FolderD1[i], '/',
+                     list.files(FolderD1[i])[str_detect(list.files(FolderD1[i]), '.dat')],
+                     sep = '')
+}
+
+D1.hdr <- vector('character')
+for(i in 1:length(FolderD1)){
+  D1.hdr[i] <- paste(FolderD1[i], '/',
+                     list.files(FolderD1[i])[str_detect(list.files(FolderD1[i]), '.hdr')],
+                     sep = '')}
+
+
+## 2.2 Georgina ####
+bbox.side = 50 #Size of one of the sides of the squares on pixels
+
+# 2.2.1 Georgina plant 1 (day 1) ####
+
+G1D1 <- read.ENVI(
+  file = D1.dat[1],
+  headerfile = D1.hdr[1],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G1D1df <- as.wide.df(G1D1)
+rm(G1D1)
+
+bbox.centre.stem = c(458, 242)
+bbox.centre.newleaf = c(480, 150)
+bbox.centre.oldleaf = c(240, 450)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G1D1stem <- subset(G1D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G1D1stem$Tissue <- "Stem"
+
+G1D1newleaf <- subset(G1D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G1D1newleaf$Tissue <- "New leaf"
+
+G1D1oldleaf <- subset(G1D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G1D1oldleaf$Tissue <- "Old leaf"
+
+data.G1D1 <- rbind(G1D1stem, G1D1newleaf, G1D1oldleaf)
+data.G1D1$Time <- "Day 1"
+data.G1D1$Variety <- "Georgina"
+data.G1D1$Plant <- "Plant 1"
+rm(G1D1df, G1D1stem, G1D1newleaf, G1D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.2.2 Georgina plant 2 (day 1) ####
+
+G2D1 <- read.ENVI(
+  file = D1.dat[2],
+  headerfile = D1.hdr[2],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G2D1df <- as.wide.df(G2D1)
+rm(G2D1)
+
+bbox.centre.stem = c(480, 300)
+bbox.centre.newleaf = c(520, 200)
+bbox.centre.oldleaf = c(240, 450)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G2D1stem <- subset(G2D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G2D1stem$Tissue <- "Stem"
+
+G2D1newleaf <- subset(G2D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G2D1newleaf$Tissue <- "New leaf"
+
+G2D1oldleaf <- subset(G2D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G2D1oldleaf$Tissue <- "Old leaf"
+
+data.G2D1 <- rbind(G2D1stem, G2D1newleaf, G2D1oldleaf)
+data.G2D1$Time <- "Day 1"
+data.G2D1$Variety <- "Georgina"
+data.G2D1$Plant <- "Plant 2"
+rm(G2D1df, G2D1stem, G2D1newleaf, G2D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.2.3 Georgina plant 3 (day 1) ####
+
+G3D1 <- read.ENVI(
+  file = D1.dat[3],
+  headerfile = D1.hdr[3],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G3D1df <- as.wide.df(G3D1)
+rm(G3D1)
+
+bbox.centre.stem = c(458, 242)
+bbox.centre.newleaf = c(480, 150)
+bbox.centre.oldleaf = c(240, 450)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G3D1stem <- subset(G3D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G3D1stem$Tissue <- "Stem"
+
+G3D1newleaf <- subset(G3D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G3D1newleaf$Tissue <- "New leaf"
+
+G3D1oldleaf <- subset(G3D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G3D1oldleaf$Tissue <- "Old leaf"
+
+data.G3D1 <- rbind(G3D1stem, G3D1newleaf, G3D1oldleaf)
+data.G3D1$Time <- "Day 1"
+data.G3D1$Variety <- "Georgina"
+data.G3D1$Plant <- "Plant 3"
+rm(G3D1df, G3D1stem, G3D1newleaf, G3D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf bbox.stem)
+dev.off()
+gc()
+
+# 2.2.4 Georgina plant 4 (day 1) ####
+
+G4D1 <- read.ENVI(
+  file = D1.dat[4],
+  headerfile = D1.hdr[4],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G4D1df <- as.wide.df(G4D1)
+rm(G4D1)
+
+bbox.centre.stem = c(440, 275)
+bbox.centre.newleaf = c(470, 155)
+bbox.centre.oldleaf = c(420, 525)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G4D1stem <- subset(G4D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G4D1stem$Tissue <- "Stem"
+
+G4D1newleaf <- subset(G4D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G4D1newleaf$Tissue <- "New leaf"
+
+G4D1oldleaf <- subset(G4D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G4D1oldleaf$Tissue <- "Old leaf"
+
+data.G4D1 <- rbind(G4D1stem, G4D1newleaf, G4D1oldleaf)
+data.G4D1$Time <- "Day 1"
+data.G4D1$Variety <- "Georgina"
+data.G4D1$Plant <- "Plant 4"
+rm(G4D1df, G4D1stem, G4D1newleaf, G4D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.2.5 Georgina plant 5 (day 1) ####
+
+G5D1 <- read.ENVI(
+  file = D1.dat[5],
+  headerfile = D1.hdr[5],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G5D1df <- as.wide.df(G5D1)
+rm(G5D1)
+
+bbox.centre.stem = c(445, 340)
+bbox.centre.newleaf = c(520, 270)
+bbox.centre.oldleaf = c(200, 470)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G5D1stem <- subset(G5D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G5D1stem$Tissue <- "Stem"
+
+G5D1newleaf <- subset(G5D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G5D1newleaf$Tissue <- "New leaf"
+
+G5D1oldleaf <- subset(G5D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G5D1oldleaf$Tissue <- "Old leaf"
+
+data.G5D1 <- rbind(G5D1stem, G5D1newleaf, G5D1oldleaf)
+data.G5D1$Time <- "Day 1"
+data.G5D1$Variety <- "Georgina"
+data.G5D1$Plant <- "Plant 5"
+rm(G5D1df, G5D1stem, G5D1newleaf, G5D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.2.6 Georgina day 1 data export ####
+data.GD1 <- rbind(data.G1D1, data.G2D1, data.G3D1, data.G4D1, data.G5D1)
+rm(data.G1D1, data.G2D1, data.G3D1, data.G4D1, data.G5D1)
+write_xlsx(data.GD1,"../Data/Excel\\Georginas day 1.xlsx")
+
+## 2.3 Juliet ####
+
+# 2.3.1 Juliet plant 1 (day 1) ####
+
+J1D1 <- read.ENVI(
+  file = D1.dat[6],
+  headerfile = D1.hdr[6],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J1D1df <- as.wide.df(J1D1)
+rm(J1D1)
+
+bbox.centre.stem = c(400, 240)
+bbox.centre.newleaf = c(420, 150)
+bbox.centre.oldleaf = c(260, 450)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J1D1stem <- subset(J1D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J1D1stem$Tissue <- "Stem"
+
+J1D1newleaf <- subset(J1D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J1D1newleaf$Tissue <- "New leaf"
+
+J1D1oldleaf <- subset(J1D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J1D1oldleaf$Tissue <- "Old leaf"
+
+data.J1D1 <- rbind(J1D1stem, J1D1newleaf, J1D1oldleaf)
+data.J1D1$Time <- "Day 1"
+data.J1D1$Variety <- "Juliet"
+data.J1D1$Plant <- "Plant 1"
+rm(J1D1df, J1D1stem, J1D1newleaf, J1D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.2 Juliet plant 2 (day 1) ####
+
+J2D1 <- read.ENVI(
+  file = D1.dat[7],
+  headerfile = D1.hdr[7],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J2D1df <- as.wide.df(J2D1)
+rm(J2D1)
+
+bbox.centre.stem = c(420, 220)
+bbox.centre.newleaf = c(550, 200)
+bbox.centre.oldleaf = c(220, 520)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J2D1stem <- subset(J2D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J2D1stem$Tissue <- "Stem"
+
+J2D1newleaf <- subset(J2D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J2D1newleaf$Tissue <- "New leaf"
+
+J2D1oldleaf <- subset(J2D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J2D1oldleaf$Tissue <- "Old leaf"
+
+data.J2D1 <- rbind(J2D1stem, J2D1newleaf, J2D1oldleaf)
+data.J2D1$Time <- "Day 1"
+data.J2D1$Variety <- "Juliet"
+data.J2D1$Plant <- "Plant 2"
+rm(J2D1df, J2D1stem, J2D1newleaf, J2D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.3 Juliet plant 3 (day 1) ####
+
+J3D1 <- read.ENVI(
+  file = D1.dat[8],
+  headerfile = D1.hdr[8],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J3D1df <- as.wide.df(J3D1)
+rm(J3D1)
+
+bbox.centre.stem = c(550, 360)
+bbox.centre.newleaf = c(480, 160)
+bbox.centre.oldleaf = c(220, 430)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J3D1stem <- subset(J3D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J3D1stem$Tissue <- "Stem"
+
+J3D1newleaf <- subset(J3D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J3D1newleaf$Tissue <- "New leaf"
+
+J3D1oldleaf <- subset(J3D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J3D1oldleaf$Tissue <- "Old leaf"
+
+data.J3D1 <- rbind(J3D1stem, J3D1newleaf, J3D1oldleaf)
+data.J3D1$Time <- "Day 1"
+data.J3D1$Variety <- "Juliet"
+data.J3D1$Plant <- "Plant 3"
+rm(J3D1df, J3D1stem, J3D1newleaf, J3D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.4 Juliet plant 4 (day 1) ####
+
+J4D1 <- read.ENVI(
+  file = D1.dat[9],
+  headerfile = D1.hdr[9],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J4D1df <- as.wide.df(J4D1)
+rm(J4D1)
+
+bbox.centre.stem = c(440, 350)
+bbox.centre.newleaf = c(480, 250)
+bbox.centre.oldleaf = c(420, 580)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J4D1stem <- subset(J4D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J4D1stem$Tissue <- "Stem"
+
+J4D1newleaf <- subset(J4D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J4D1newleaf$Tissue <- "New leaf"
+
+J4D1oldleaf <- subset(J4D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J4D1oldleaf$Tissue <- "Old leaf"
+
+data.J4D1 <- rbind(J4D1stem, J4D1newleaf, J4D1oldleaf)
+data.J4D1$Time <- "Day 1"
+data.J4D1$Variety <- "Juliet"
+data.J4D1$Plant <- "Plant 4"
+rm(J4D1df, J4D1stem, J4D1newleaf, J4D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.5 Juliet plant 5 (day 1) ####
+
+J5D1 <- read.ENVI(
+  file = D1.dat[10],
+  headerfile = D1.hdr[10],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J5D1df <- as.wide.df(J5D1)
+rm(J5D1)
+
+bbox.centre.stem = c(530, 320)
+bbox.centre.newleaf = c(530, 240)
+bbox.centre.oldleaf = c(445, 550)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J5D1stem <- subset(J5D1df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J5D1stem$Tissue <- "Stem"
+
+J5D1newleaf <- subset(J5D1df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J5D1newleaf$Tissue <- "New leaf"
+
+J5D1oldleaf <- subset(J5D1df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J5D1oldleaf$Tissue <- "Old leaf"
+
+data.J5D1 <- rbind(J5D1stem, J5D1newleaf, J5D1oldleaf)
+data.J5D1$Time <- "Day 1"
+data.J5D1$Variety <- "Juliet"
+data.J5D1$Plant <- "Plant 5"
+rm(J5D1df, J5D1stem, J5D1newleaf, J5D1oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.9 Juliet day 1 data export ####
+data.JD1 <- rbind(data.J1D1, data.J2D1, data.J3D1, data.J4D1, data.J5D1) 
+rm(data.J1D1, data.J2D1, data.J3D1, data.J4D1, data.J5D1)
+
+## 2.4 Day 1 data export ####
+data.D1 <- rbind(data.GD1, data.JD1)
+rm(data.GD1, data.JD1, D1.dat, D1.hdr, FolderD1, i)
+gc()
+
+## 3) Day 2 ####
+## 3.1 Folders ####
+
+.FolderD2 <- list.dirs('../Data/2022-01-27 CERC potatoes')
+FolderD2 <- .FolderD2[str_detect(.FolderD2, '_ref')]
+
+D2.dat <- vector('character')
+for(i in 1:length(FolderD2)){
+  D2.dat[i] <- paste(FolderD2[i], '/',
+                     list.files(FolderD2[i])[str_detect(list.files(FolderD2[i]), '.dat')],
+                     sep = '')
+}
+
+D2.hdr <- vector('character')
+for(i in 1:length(FolderD2)){
+  D2.hdr[i] <- paste(FolderD2[i], '/',
+                     list.files(FolderD2[i])[str_detect(list.files(FolderD2[i]), '.hdr')],
+                     sep = '')}
+
+## 3.2 Georgina ####
+
+# 3.2.1 Georgina plant 1 (day 2) ####
+
+G1D2 <- read.ENVI(
+  file = D2.dat[6],
+  headerfile = D2.hdr[6],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G1D2df <- as.wide.df(G1D2)
+rm(G1D2)
+
+bbox.centre.stem = c(425, 265)
+bbox.centre.newleaf = c(460, 140)
+bbox.centre.oldleaf = c(150, 440)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G1D2stem <- subset(G1D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G1D2stem$Tissue <- "Stem"
+
+G1D2newleaf <- subset(G1D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G1D2newleaf$Tissue <- "New leaf"
+
+G1D2oldleaf <- subset(G1D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G1D2oldleaf$Tissue <- "Old leaf"
+
+data.G1D2 <- rbind(G1D2stem, G1D2newleaf, G1D2oldleaf)
+data.G1D2$Time <- "Day 2"
+data.G1D2$Variety <- "Georgina"
+data.G1D2$Plant <- "Plant 1"
+rm(G1D2df, G1D2stem, G1D2newleaf, G1D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 3.2.2 Georgina plant 2 (day 2) ####
+
+G2D2 <- read.ENVI(
+  file = D2.dat[7],
+  headerfile = D2.hdr[7],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G2D2df <- as.wide.df(G2D2)
+rm(G2D2)
+
+bbox.centre.stem = c(400, 300)
+bbox.centre.newleaf = c(510, 220)
+bbox.centre.oldleaf = c(240, 550)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G2D2stem <- subset(G2D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G2D2stem$Tissue <- "Stem"
+
+G2D2newleaf <- subset(G2D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G2D2newleaf$Tissue <- "New leaf"
+
+G2D2oldleaf <- subset(G2D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G2D2oldleaf$Tissue <- "Old leaf"
+
+data.G2D2 <- rbind(G2D2stem, G2D2newleaf, G2D2oldleaf)
+data.G2D2$Time <- "Day 2"
+data.G2D2$Variety <- "Georgina"
+data.G2D2$Plant <- "Plant 2"
+rm(G2D2df, G2D2stem, G2D2newleaf, G2D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 3.2.3 Georgina plant 3 (day 2) ####
+
+G3D2 <- read.ENVI(
+  file = D2.dat[8],
+  headerfile = D2.hdr[8],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G3D2df <- as.wide.df(G3D2)
+rm(G3D2)
+
+bbox.centre.stem = c(450, 300)
+bbox.centre.newleaf = c(480, 145)
+bbox.centre.oldleaf = c(240, 520)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G3D2stem <- subset(G3D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G3D2stem$Tissue <- "Stem"
+
+G3D2newleaf <- subset(G3D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G3D2newleaf$Tissue <- "New leaf"
+
+G3D2oldleaf <- subset(G3D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G3D2oldleaf$Tissue <- "Old leaf"
+
+data.G3D2 <- rbind(G3D2stem, G3D2newleaf, G3D2oldleaf)
+data.G3D2$Time <- "Day 2"
+data.G3D2$Variety <- "Georgina"
+data.G3D2$Plant <- "Plant 3"
+rm(G3D2df, G3D2stem, G3D2newleaf, G3D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 3.2.4 Georgina plant 4 (day 2) ####
+
+G4D2 <- read.ENVI(
+  file = D2.dat[9],
+  headerfile = D2.hdr[9],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G4D2df <- as.wide.df(G4D2)
+rm(G4D2)
+
+bbox.centre.stem = c(415, 300)
+bbox.centre.newleaf = c(470, 170)
+bbox.centre.oldleaf = c(370, 555)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G4D2stem <- subset(G4D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G4D2stem$Tissue <- "Stem"
+
+G4D2newleaf <- subset(G4D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G4D2newleaf$Tissue <- "New leaf"
+
+G4D2oldleaf <- subset(G4D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G4D2oldleaf$Tissue <- "Old leaf"
+
+data.G4D2 <- rbind(G4D2stem, G4D2newleaf, G4D2oldleaf)
+data.G4D2$Time <- "Day 2"
+data.G4D2$Variety <- "Georgina"
+data.G4D2$Plant <- "Plant 4"
+rm(G4D2df, G4D2stem, G4D2newleaf, G4D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 3.2.5 Georgina plant 5 (day 2) ####
+
+G5D2 <- read.ENVI(
+  file = D2.dat[10],
+  headerfile = D2.hdr[10],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+G5D2df <- as.wide.df(G5D2)
+rm(G5D2)
+
+bbox.centre.stem = c(525, 345)
+bbox.centre.newleaf = c(600, 280)
+bbox.centre.oldleaf = c(200, 480)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+G5D2stem <- subset(G5D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+G5D2stem$Tissue <- "Stem"
+
+G5D2newleaf <- subset(G5D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+G5D2newleaf$Tissue <- "New leaf"
+
+G5D2oldleaf <- subset(G5D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+G5D2oldleaf$Tissue <- "Old leaf"
+
+data.G5D2 <- rbind(G5D2stem, G5D2newleaf, G5D2oldleaf)
+data.G5D2$Time <- "Day 2"
+data.G5D2$Variety <- "Georgina"
+data.G5D2$Plant <- "Plant 5"
+rm(G5D2df, G5D2stem, G5D2newleaf, G5D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 3.2.9 Georgina day 2 data export ####
+data.GD2 <- rbind(data.G1D2, data.G2D2, data.G3D2, data.G4D2, data.G5D2, data.G6D2, data.G7D2, data.G8D2)
+rm(data.G1D2, data.G2D2, data.G3D2, data.G4D2, data.G5D2)
+
+
+## 3.3 Juliet ####
+
+# 3.3.1 Juliet plant 1 (day 2) ####
+
+J1D2 <- read.ENVI(
+  file = D2.dat[5],
+  headerfile = D2.hdr[5],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J1D2df <- as.wide.df(J1D2)
+rm(J1D2)
+
+bbox.centre.stem = c(470, 365)
+bbox.centre.newleaf = c(405, 240)
+bbox.centre.oldleaf = c(80, 80)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J1D2stem <- subset(J1D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J1D2stem$Tissue <- "Stem"
+
+J1D2newleaf <- subset(J1D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J1D2newleaf$Tissue <- "New leaf"
+
+J1D2oldleaf <- subset(J1D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J1D2oldleaf$Tissue <- "Old leaf"
+
+data.J1D2 <- rbind(J1D2stem, J1D2newleaf, J1D2oldleaf)
+data.J1D2$Time <- "Day 2"
+data.J1D2$Variety <- "Juliet"
+data.J1D2$Plant <- "Plant 1"
+rm(J1D2df, J1D2stem, J1D2newleaf, J1D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.2 Juliet plant 2 (day 2) ####
+
+J2D2 <- read.ENVI(
+  file = D2.dat[1],
+  headerfile = D2.hdr[1],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J2D2df <- as.wide.df(J2D2)
+rm(J2D2)
+
+bbox.centre.stem = c(480, 300)
+bbox.centre.newleaf = c(500, 180)
+bbox.centre.oldleaf = c(50, 520)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J2D2stem <- subset(J2D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J2D2stem$Tissue <- "Stem"
+
+J2D2newleaf <- subset(J2D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J2D2newleaf$Tissue <- "New leaf"
+
+J2D2oldleaf <- subset(J2D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J2D2oldleaf$Tissue <- "Old leaf"
+
+data.J2D2 <- rbind(J2D2stem, J2D2newleaf, J2D2oldleaf)
+data.J2D2$Time <- "Day 2"
+data.J2D2$Variety <- "Juliet"
+data.J2D2$Plant <- "Plant 2"
+rm(J2D2df, J2D2stem, J2D2newleaf, J2D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.3 Juliet plant 3 (day 2) ####
+
+J3D2 <- read.ENVI(
+  file = D2.dat[2],
+  headerfile = D2.hdr[2],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J3D2df <- as.wide.df(J3D2)
+rm(J3D2)
+
+bbox.centre.stem = c(525, 260)
+bbox.centre.newleaf = c(530, 160)
+bbox.centre.oldleaf = c(250, 520)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J3D2stem <- subset(J3D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J3D2stem$Tissue <- "Stem"
+
+J3D2newleaf <- subset(J3D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J3D2newleaf$Tissue <- "New leaf"
+
+J3D2oldleaf <- subset(J3D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J3D2oldleaf$Tissue <- "Old leaf"
+
+data.J3D2 <- rbind(J3D2stem, J3D2newleaf, J3D2oldleaf)
+data.J3D2$Time <- "Day 2"
+data.J3D2$Variety <- "Juliet"
+data.J3D2$Plant <- "Plant 3"
+rm(J3D2df, J3D2stem, J3D2newleaf, J3D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.4 Juliet plant 4 (day 2) ####
+
+J4D2 <- read.ENVI(
+  file = D2.dat[3],
+  headerfile = D2.hdr[3],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J4D2df <- as.wide.df(J4D2)
+rm(J4D2)
+
+bbox.centre.stem = c(500, 300)
+bbox.centre.newleaf = c(510, 175)
+bbox.centre.oldleaf = c(200, 520)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J4D2stem <- subset(J4D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J4D2stem$Tissue <- "Stem"
+
+J4D2newleaf <- subset(J4D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J4D2newleaf$Tissue <- "New leaf"
+
+J4D2oldleaf <- subset(J4D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J4D2oldleaf$Tissue <- "Old leaf"
+
+data.J4D2 <- rbind(J4D2stem, J4D2newleaf, J4D2oldleaf)
+data.J4D2$Time <- "Day 2"
+data.J4D2$Variety <- "Juliet"
+data.J4D2$Plant <- "Plant 4"
+rm(J4D2df, J4D2stem, J4D2newleaf, J4D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.5 Juliet plant 5 (day 2) ####
+
+J5D2 <- read.ENVI(
+  file = D2.dat[4],
+  headerfile = D2.hdr[4],
+  header = list(),
+  keys.hdr2data = FALSE,
+  wavelength = NULL,
+  label = list(),
+  block.lines.skip = 0,
+  block.lines.size = NULL,
+  pull.header.lines = TRUE)
+
+J5D2df <- as.wide.df(J5D2)
+rm(J5D2)
+
+bbox.centre.stem = c(435, 365)
+bbox.centre.newleaf = c(560, 230)
+bbox.centre.oldleaf = c(100, 550)
+
+bbox.stem <- rbind(c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)),
+                   c(bbox.centre.stem[1] - (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] + (bbox.side/2)),
+                   c(bbox.centre.stem[1] + (bbox.side/2),
+                     bbox.centre.stem[2] - (bbox.side/2)))
+
+bbox.newleaf <- rbind(c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] - (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.newleaf[1] + (bbox.side/2),
+                        bbox.centre.newleaf[2] - (bbox.side/2)))
+
+bbox.oldleaf <- rbind(c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] - (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] + (bbox.side/2)),
+                      c(bbox.centre.oldleaf[1] + (bbox.side/2),
+                        bbox.centre.oldleaf[2] - (bbox.side/2)))
+
+J5D2stem <- subset(J5D2df, x >= bbox.stem[1,1] & x <= bbox.stem[3,1] &
+                     y >= bbox.stem[1,2] & y <= bbox.stem[3,2])
+J5D2stem$Tissue <- "Stem"
+
+J5D2newleaf <- subset(J5D2df, x >= bbox.newleaf[1,1] & x <= bbox.newleaf[3,1] &
+                        y >= bbox.newleaf[1,2] & y <= bbox.newleaf[3,2])
+J5D2newleaf$Tissue <- "New leaf"
+
+J5D2oldleaf <- subset(J5D2df, x >= bbox.oldleaf[1,1] & x <= bbox.oldleaf[3,1] &
+                        y >= bbox.oldleaf[1,2] & y <= bbox.oldleaf[3,2])
+J5D2oldleaf$Tissue <- "Old leaf"
+
+data.J5D2 <- rbind(J5D2stem, J5D2newleaf, J5D2oldleaf)
+data.J5D2$Time <- "Day 2"
+data.J5D2$Variety <- "Juliet"
+data.J5D2$Plant <- "Plant 5"
+rm(J5D2df, J5D2stem, J5D2newleaf, J5D2oldleaf, bbox.centre.newleaf, bbox.centre.oldleaf, bbox.centre.stem, bbox.newleaf, bbox.oldleaf, bbox.stem)
+dev.off()
+gc()
+
+# 2.3.9 Juliet day 2 data export ####
+data.JD2 <- rbind(data.J1D2, data.J2D2, data.J3D2, data.J4D2, data.J5D2) 
+rm(data.J1D2, data.J2D2, data.J3D2, data.J4D2, data.J5D2)
+
+## 3.4 day 2 data export ####
+data.D2 <- rbind(data.GD2, data.JD2)
+rm(data.GD2, data.JD2, D2.dat, D2.hdr, FolderD2, i)
+gc()
+
+## 3)Complete dataset ####
+data.raw <- rbind(data.D1, data.D2)
+rm(data.D1, data.D2)
+gc()
+
+## 4) Indexes ####
+## 4.1 Calculation
+
+# 4.1.1 mean RGB
+data.raw$meanRGB <- rowMeans(data.raw[,c(134,77,37)])
+
+## 4.1.2 NDVI (Normalized Difference Vegetation Index)
+#             Rouse et. al. 1974 cited by Mhango et. al. 2021 p. 8
+
+data.raw$NDVI <- (data.raw$`864` - data.raw$`664`) / (data.raw$`864` + data.raw$`664`)
+
+## 4.1.3 SIPI (Structure Intensive Pigment Index)
+#               Penuelas, 1995 cited by Liu et. al. 2021 p. 6
+
+data.raw$SIPI <- (data.raw$`800` - data.raw$`444`)/(data.raw$`800` + data.raw$`680`) 
+
+## 4.1.4 CARI (Chlorophyll Absorption in Reflectance Index)
+#               Daughtry, 2000 cited by Liu et. al. 2021 p. 6
+
+data.raw$CARI <- (data.raw$`700` - data.raw$`670`) - 0.2*(data.raw$`700` - data.raw$`550`)
+
+## 4.1.5 CIG (Chlorophyll Index Green)
+#             Gitelson et. al. 2003 cited by Mhango et. al. 2021 p. 8
+
+data.raw$CIG <- (data.raw$`782` / data.raw$`560`) - 1
+
+## 4.2 Data export
+
+write_xlsx(data.raw,"../Data/Excel\\Data of the raw experimen with indexes.xlsx")
+
+data.ag <- aggregate(. ~ Tissue + Time + Variety + Plant, data.raw, function(x) c(mean = mean(x), sd = sd(x)))
+write_xlsx(data.ag,"../Data/Excel\\Data with mean and sd.xlsx")
+
+```

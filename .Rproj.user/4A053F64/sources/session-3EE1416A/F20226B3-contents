@@ -1,0 +1,27 @@
+#Invent some data
+DF <- data.frame(Treat = rep(LETTERS[1:4], 100, replace = TRUE),
+                 A = rnorm(400),
+                 B = rnorm(400),
+                 C = rnorm(400),
+                 D = rnorm(400),
+                 E = rnorm(400),
+                 F = rnorm(400),
+                 G = rnorm(400),
+                 H = rnorm(400))
+#Make a list to store the results
+FITS <- vector(mode = "list", length = 8)
+
+for (i in 2:9){
+  FITS[[i-1]] <- aov(DF[[i]] ~ DF[[1]])
+}
+FITS[[1]]
+#> Call:
+#>    aov(formula = DF[[i]] ~ DF[[1]])
+#> 
+#> Terms:
+#>                  DF[[1]] Residuals
+#> Sum of Squares    2.3112  444.9797
+#> Deg. of Freedom        3       396
+#> 
+#> Residual standard error: 1.060041
+#> Estimated effects may be unbalanced
