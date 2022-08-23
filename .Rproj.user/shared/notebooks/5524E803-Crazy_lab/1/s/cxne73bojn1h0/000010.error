@@ -1,1 +1,0 @@
-{"frames":[],"message":"Error in geom_spatial_rgb(data = G1D1df, aes(x = x, y = y, r = spc[, 114],  : \n  could not find function \"geom_spatial_rgb\"\n"}

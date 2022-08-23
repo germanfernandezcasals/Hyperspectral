@@ -1,0 +1,6 @@
+"0","tic()"
+"0","ggplot() +"
+"0","  geom_raster(data = G1D1df,"
+"0","              aes (x = x, y = y, fill = spc[,32])); toc()"
+"1","4.48 sec elapsed
+"

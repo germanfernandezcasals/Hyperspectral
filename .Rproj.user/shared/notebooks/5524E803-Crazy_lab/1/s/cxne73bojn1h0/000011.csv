@@ -1,0 +1,13 @@
+"0","tic()"
+"0","rgb <- brick("
+"0","  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,114])),"
+"0","  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,65])),"
+"0","  rasterFromXYZ(data.frame(G1D1df$x, G1D1df$y, G1D1df$spc[,32])))"
+"0",""
+"0","plotRGB(rgb,"
+"0","        r = 1,"
+"0","        g = 2,"
+"0","        b = 3,"
+"0","        stretch = ""lin""); toc()"
+"1","3.12 sec elapsed
+"

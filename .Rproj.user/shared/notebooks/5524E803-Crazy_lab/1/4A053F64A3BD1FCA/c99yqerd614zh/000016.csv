@@ -1,0 +1,1 @@
+"0","  lines(spPolygons(bbox.stem, crs = crs(rgb)), col = ""red"", lwd = 3) "

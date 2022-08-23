@@ -1,0 +1,1 @@
+"0","  lines(spPolygons(bbox.newleaf, crs = crs(rgb)), col = ""red"", lwd = 3)"

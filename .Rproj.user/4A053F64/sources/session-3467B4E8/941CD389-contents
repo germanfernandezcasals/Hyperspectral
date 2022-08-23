@@ -1,0 +1,137 @@
+## Header ####
+## Creator:     German Agustin Fernandez Casals
+## Main:        Hyperspectral data analysis
+## Version:     2.1
+## Creation:    2022-II-25
+## Last edited: 2022-IV-12
+
+# Packages
+library(readxl)
+if(!require("lme4")) install.packages("lme4")
+if(!require("lmerTest")) install.packages("lmerTest")
+if(!require("agricolae")) install.packages("agricolae")
+if(!require("tictoc")) install.packages("tictoc")
+
+# Data import
+tic()
+data.raw <- read_excel("~/Harper Adams Uni/Dissertation/RStat_Dissertation/Data/Excel/Data of the raw experimen with indexes.xlsx"); toc()
+
+
+
+## Spectrums analysis
+
+# Shapiro-Wilk
+Shap <- vector(mode = "list", length = 299)
+Shap.r <- vector(mode = "list", length = 299)
+
+for (i in 8:306){
+  Shap[[i-7]] <- shapiro.test(data.ag[[i]][,1])
+  Shap.r[[i-7]] <- Shap[[i-7]][["p.value"]]
+}
+
+sum(Shap.r < 0.05) #There is values that are not Gaussian
+rm(Shap,Shap.r)
+
+# Linear Mixed-Effects Models
+
+lmer_list <- vector("list", length = 299)
+Results <- matrix(nrow = 299, ncol = 4)
+
+
+for(i in 8:306){
+  fm1 <- lmer(data.ag[[i]][,1] ~ data.ag[[i]][,2] + data.ag[[2]] + data.ag[[3]] +
+                (1|data.ag[[4]]))
+  lmer_list[[i - 7]] <- anova(fm1)$`Pr(>F)`
+  Results[i - 7,1] <- colnames(data.ag[i])
+  Results[i - 7,2] <- matrix(lmer_list[[i - 7]])[1,1]
+  Results[i - 7,3] <- matrix(lmer_list[[i - 7]])[2,1]
+  Results[i - 7,4] <- matrix(lmer_list[[i - 7]])[3,1] 
+}
+
+colnames(Results) <- c("Spectrum","Tissue","Time","Variety")
+Results <- data.frame(Results)
+Results$Spectrum <- as.numeric(Results$Spectrum)
+Results$Tissue <- as.numeric(Results$Tissue)
+Results$Time <- as.numeric(Results$Time)
+Results$Variety <- as.numeric(Results$Variety)
+
+
+# Plot of the results
+
+PlotData <- data.frame(Spectrum = rep(Results$Spectrum,3),
+                       Factor = c(rep("Tissue",299),rep("Time",299), rep("Variety",299)),
+                       Value = c(Results$Tissue, Results$Time, Results$Variety))
+PlotData$Facha <- PlotData$Value<=0.05 
+
+ggplot(PlotData, aes(x = Spectrum, y = Value, colour= Facha))+
+  geom_point() +
+  facet_wrap(Factor~.) + 
+  geom_hline(yintercept = 0.05) +
+  labs(x = "Spectrum (nm)",
+       y = "P value",
+       colour = "Statistical significance:") +
+  scale_color_discrete(labels=c("No difference (p value > 0.05)",
+                                "Different (p value \u2264 0.05)"),
+                       type = c("red", "darkgreen")) +
+  scale_y_continuous(breaks=c(0, 0.05, 0.25, 0.50, 0.75, 1.00)) +
+  theme_minimal() +
+  theme(legend.position="bottom") 
+
+Tissuepval <- subset(Results, Tissue <= 0.05)
+Tissuepval$Spectrum # There's significant differences on tissue on the spectrum
+# form 402 to 728, from 918 to 964 and 978 to 990 at 5%
+
+Tissuepval <- subset(Results, Tissue <= 0.01)
+Tissuepval$Spectrum # There's significant differences on tissue on the spectrum
+# form 402 to 720 and from 926 to 960 at 1%
+
+
+rm(fm1, lmer_list, PlotData, Results, i, Tissuepval)
+
+# Index analysis
+
+# Shapiro-Wilk
+Shap <- vector(mode = "list", length = 8)
+Shap.r <- vector(mode = "list", length = 8)
+
+for (i in 307:314){
+  Shap[[i-306]] <- shapiro.test(data.ag[[i]][,1])
+  Shap.r[[i-306]] <- Shap[[i-306]][["p.value"]]
+}
+
+sum(Shap.r < 0.05) #MeanRGB is not Gaussian
+rm(Shap,Shap.r, i) 
+
+
+
+# Analysis of variance
+
+NDVI.aov <- aov(NDVI[,1] ~ Time + Tissue + Variety + Plant, data = data.ag)
+summary(NDVI.aov)
+LSD.test(NDVI.aov,"Tissue",console = TRUE)
+
+SIPI.aov <- aov(SIPI[,1] ~ Time + Tissue + Variety + Plant, data = data.ag)
+summary(SIPI.aov)
+LSD.test(SIPI.aov,"Tissue",console = TRUE)
+
+CARI.aov <- aov(CARI[,1] ~ Time + Tissue + Variety + Plant, data = data.ag)
+summary(CARI.aov)
+LSD.test(CARI.aov,"Tissue",console = TRUE)
+
+CIG.aov <- aov(CIG[,1] ~ Time + Tissue + Variety + Plant, data = data.ag)
+summary(CIG.aov)
+LSD.test(CIG.aov,"Tissue",console = TRUE)
+
+CIred.aov <- aov(CIred[,1] ~ Time + Tissue + Variety + Plant, data = data.ag)
+summary(CIred.aov)
+LSD.test(CIred.aov,"Tissue",console = TRUE)
+
+CIgreen.aov <- aov(CIgreen[,1] ~ Time + Tissue + Variety + Plant, data = data.ag)
+summary(CIgreen.aov)
+LSD.test(CIgreen.aov,"Tissue",console = TRUE)
+
+VARI.aov <- aov(VARI[,1] ~ Time + Tissue + Variety + Plant, data = data.ag)
+summary(VARI.aov)
+LSD.test(VARI.aov,"Tissue",console = TRUE)
+
+rm(NDVI.aov, SIPI.aov, CARI.aov, CIG.aov, CIred.aov, CIgreen.aov, VARI.aov)

@@ -1,0 +1,67 @@
+library(lme4)
+library(lmerTest)
+library(visreg)
+
+i = 308
+
+lme0 <- lmer(NDVI[,1] ~ Tissue + Time + Variety +(1|Plant), data = data.ag)
+lme1 <- lmer(meanRGB[,1] ~ Tissue + Time + Variety +(1|Plant), data = data.ag)
+
+anova(lme0)  
+summary(lme0) #Contrast table (fixed effects)
+summary(lme1)
+
+aov <- anova(lme0)
+aov$`Pr(>F)`
+
+
+anova(lme1)  
+
+visreg(lme0, "Tissue", by = "Variety")
+visreg(lme0, "Time", by = "Variety")
+
+visreg(lme1, "Tissue", by = "Variety")
+visreg(lme1, "Time", by = "Variety")
+
+
+colnames(data.ag[8:311])
+
+
+lmer_list <- data.frame(matrix(ncol = 3, nrow = 306))
+colnames(lmer_list) <- c("Tissue", "Time", "Variety")
+rownames(lmer_list) <- c(colnames(data.ag[8:311]))
+
+tic()
+for(i in 8:306){
+  fm1 <- lmer(data.ag[[i]][,1] ~ data.ag[[i]][,2] + data.ag[[2]] + data.ag[[3]] +
+                (1|data.ag[[4]]))
+  aov <- anova(fm1)
+  lmer_list[[i - 7]]$Tissue <- aov$`Pr(>F)`[1]
+  lmer_list[[i - 7]]$Time <- aov$`Pr(>F)`[2]
+  lmer_list[[i - 7]]$Variety <- aov$`Pr(>F)`[3]
+}:toc()
+
+lmer_list[3]
+
+aov$Pr(>F)
+
+
+
+
+
+
+fm1 <- lmer(data.ag[[100]][,1] ~ data.ag[[100]][,2] + data.ag[[2]] + data.ag[[3]] +
+              (1|data.ag[[4]]))
+lmer_list[[8 - 7]] <- anova(fm1)$
+Results[8 - 7,1] <- colnames(data.ag[8])
+Results[8 - 7,2] <- matrix(lmer_list[[8 - 7]])[1,1]
+Results[8 - 7,3] <- matrix(lmer_list[[8 - 7]])[2,1]
+Results[8 - 7,4] <- matrix(lmer_list[[8 - 7]])[3,1]
+
+
+data.ag[[8]][,1]
+fm1
+anova(fm1)
+summary(fm1)[[1]][["Pr(>F)"]][1]
+H <- anova(fm1)
+H$`F value`
